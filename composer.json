@@ -1,0 +1,19 @@
+{
+    "name": "alexwarman/random-cat-image",
+    "description": "Random cat image from ai-cats.net",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Alexwarman\\RandomCatImage\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Alex Warman",
+            "email": "alex.warman@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
