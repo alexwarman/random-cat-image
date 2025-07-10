@@ -11,17 +11,12 @@ This guide shows how to integrate the Random Cat Image package seamlessly with L
 
 2. **For Laravel 5.5+:** The package will be automatically discovered.
 
-3. **For older Laravel versions:** Manually add the service provider and facade:
+3. **For older Laravel versions:** Manually add the service provider:
    ```php
    // config/app.php
    'providers' => [
        // ...
        Alexwarman\RandomCatImage\RandomCatImageServiceProvider::class,
-   ],
-
-   'aliases' => [
-       // ...
-       'RandomCatImage' => Alexwarman\RandomCatImage\Facades\RandomCatImage::class,
    ],
    ```
 
@@ -44,27 +39,30 @@ This guide shows how to integrate the Random Cat Image package seamlessly with L
 
 ## Usage Examples
 
-### 1. Using the Facade
+### 1. Using Dependency Injection (Recommended)
 
 ```php
-use Alexwarman\RandomCatImage\Facades\RandomCatImage;
+use Alexwarman\RandomCatImage\RandomCatImage;
 
 // In a controller
-public function getCat()
+class CatController extends Controller
 {
-    $catImage = RandomCatImage::get();
-    return view('cat', compact('catImage'));
+    public function getCat(RandomCatImage $catImage)
+    {
+        $base64Image = $catImage->get();
+        return view('cat', compact('base64Image'));
+    }
 }
 
 // In a route closure
-Route::get('/cat', function () {
+Route::get('/cat', function (RandomCatImage $catImage) {
     return response()->json([
-        'image' => 'data:image/jpeg;base64,' . RandomCatImage::get()
+        'image' => 'data:image/jpeg;base64,' . $catImage->get()
     ]);
 });
 ```
 
-### 2. Using Dependency Injection
+### 2. Using Service Classes
 
 ```php
 use Alexwarman\RandomCatImage\RandomCatImage;
@@ -98,21 +96,9 @@ $catImage = resolve('random-cat-image')->get();
 ### 4. In Blade Templates
 
 ```blade
-@php
-    $catImage = app('random-cat-image')->get();
-@endphp
+@inject('catService', 'random-cat-image')
 
-<img src="data:image/jpeg;base64,{{ $catImage }}" alt="Random Cat" />
-```
-
-### 5. Artisan Commands
-
-```bash
-# Get a random cat image (displays base64 data)
-php artisan cat:random
-
-# Save a random cat image to file
-php artisan cat:random --save=storage/app/public/cat.jpg
+<img src="data:image/jpeg;base64,{{ $catService->get() }}" alt="Random Cat" />
 ```
 
 ## Advanced Usage

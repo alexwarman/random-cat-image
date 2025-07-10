@@ -8,8 +8,7 @@ This package provides a simple and easy way to get random cat images in your PHP
 
 **Laravel Features:**
 - Auto-discovery service provider
-- Facade support for easy static access
-- Artisan command for CLI usage
+- Dependency injection support
 - Configuration file for customization
 - Built-in caching support
 - Environment variable configuration
@@ -31,11 +30,6 @@ For Laravel 5.5+, the package will be automatically discovered. For older versio
 'providers' => [
     // ...
     Alexwarman\RandomCatImage\RandomCatImageServiceProvider::class,
-],
-
-'aliases' => [
-    // ...
-    'RandomCatImage' => Alexwarman\RandomCatImage\Facades\RandomCatImage::class,
 ],
 ```
 
@@ -67,19 +61,7 @@ file_put_contents('cat.jpg', base64_decode($base64Image));
 
 ### Laravel Usage
 
-#### Using the Facade
-
-```php
-use Alexwarman\RandomCatImage\Facades\RandomCatImage;
-
-// Get a random cat image
-$base64Image = RandomCatImage::get();
-
-// Use in a view
-return view('welcome', compact('base64Image'));
-```
-
-#### Using Dependency Injection
+#### Using Dependency Injection (Recommended)
 
 ```php
 use Alexwarman\RandomCatImage\RandomCatImage;
@@ -97,24 +79,22 @@ class CatController extends Controller
 }
 ```
 
+#### Using Service Container
+
+```php
+// Get instance from container
+$catImage = app('random-cat-image')->get();
+
+// Or using resolve helper
+$catImage = resolve('random-cat-image')->get();
+```
+
 #### In Blade Templates
 
 ```blade
-@php
-    $catImage = app('random-cat-image')->get();
-@endphp
+@inject('catService', 'random-cat-image')
 
-<img src="data:image/jpeg;base64,{{ $catImage }}" alt="Random Cat" class="img-fluid" />
-```
-
-#### Using Artisan Command
-
-```bash
-# Fetch and display base64 image data
-php artisan cat:random
-
-# Save image to file
-php artisan cat:random --save=storage/app/cat.jpg
+<img src="data:image/jpeg;base64,{{ $catService->get() }}" alt="Random Cat" class="img-fluid" />
 ```
 
 ### Configuration
@@ -161,9 +141,8 @@ return [
 - PSR-4 autoloading compatible
 - **Laravel Integration:**
   - Auto-discovery service provider
-  - Facade support
+  - Dependency injection support
   - Configuration file
-  - Artisan command
   - Built-in caching
   - Environment variable support
 
@@ -173,9 +152,11 @@ return [
 
 ```php
 // routes/api.php
-Route::get('/random-cat', function () {
+use Alexwarman\RandomCatImage\RandomCatImage;
+
+Route::get('/random-cat', function (RandomCatImage $catService) {
     return response()->json([
-        'image' => 'data:image/jpeg;base64,' . RandomCatImage::get(),
+        'image' => 'data:image/jpeg;base64,' . $catService->get(),
         'timestamp' => now()
     ]);
 });
@@ -185,6 +166,8 @@ Route::get('/random-cat', function () {
 
 ```php
 // app/Console/Kernel.php
+use Alexwarman\RandomCatImage\RandomCatImage;
+
 protected function schedule(Schedule $schedule)
 {
     $schedule->call(function () {

@@ -3,7 +3,6 @@
 namespace Alexwarman\RandomCatImage;
 
 use Illuminate\Support\ServiceProvider;
-use Alexwarman\RandomCatImage\Console\Commands\FetchRandomCatCommand;
 
 class RandomCatImageServiceProvider extends ServiceProvider
 {
@@ -33,10 +32,6 @@ class RandomCatImageServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../config/random-cat-image.php' => config_path('random-cat-image.php'),
             ], 'random-cat-image-config');
-
-            $this->commands([
-                FetchRandomCatCommand::class,
-            ]);
         }
     }
 

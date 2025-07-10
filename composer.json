@@ -29,10 +29,7 @@
         "laravel": {
             "providers": [
                 "Alexwarman\\RandomCatImage\\RandomCatImageServiceProvider"
-            ],
-            "aliases": {
-                "RandomCatImage": "Alexwarman\\RandomCatImage\\Facades\\RandomCatImage"
-            }
+            ]
         }
     },
     "minimum-stability": "stable",
